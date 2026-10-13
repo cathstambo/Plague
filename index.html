@@ -1,56 +1,719 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#15100f"><title>Escape the Sanctuary — Plague Protocol</title><style>
-:root{color-scheme:dark;--bg:#15100f;--panel:#261d19;--line:#765b43;--gold:#e6bb77;--text:#f3e6d4;--muted:#bda994}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#35251d,var(--bg) 72%);font:16px/1.45 Georgia,serif;color:var(--text)}button{font:inherit;cursor:pointer}header{padding:12px max(14px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #644830}header strong{color:var(--gold);font-size:clamp(16px,3vw,23px)}header small{display:block;color:var(--muted)}.wrap{max-width:1100px;margin:auto;padding:12px}.scene{position:relative;aspect-ratio:3/2;border:3px solid #8b6a44;border-radius:10px;overflow:hidden;background:#080808;box-shadow:0 14px 35px #0008}.scene img{width:100%;height:100%;display:block}.hot{position:absolute;border:1px solid transparent;background:transparent;border-radius:8px;touch-action:manipulation}.hot:focus-visible{outline:3px solid #ffdb8c;background:#ffce4d33}.hot:hover{background:#ffce4d1c;border-color:#ffdca67a}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.btn{background:linear-gradient(#6c4b2d,#422b1d);border:1px solid #ad8353;color:#fff0d6;border-radius:8px;padding:11px 14px;min-height:44px}.btn:disabled{opacity:.35;cursor:not-allowed}.btn.active{background:#89642d;border-color:#f9d37e}.btn.ghost{background:#29201c}.panel{background:#261d19;border:1px solid #6f533a;border-radius:10px;padding:13px;margin-top:10px}.panel h3{color:var(--gold);margin:0 0 8px}.muted{color:var(--muted)}.small{font-size:13px}.items{display:flex;flex-wrap:wrap;gap:7px}.pill{padding:6px 10px;border:1px solid #846543;border-radius:20px;background:#39291d}.overlay{position:fixed;inset:0;background:#000b;z-index:10;display:flex;align-items:center;justify-content:center;padding:12px}.dialog{width:min(570px,100%);max-height:90dvh;overflow:auto;background:#251c18;border:2px solid #ad8353;border-radius:14px;padding:18px;box-shadow:0 15px 60px #000}.dialog h2{margin:0 0 10px;color:#f0c782;font-size:24px}.dialog p{margin:9px 0}.dialog footer{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.dialog table{border-collapse:collapse;width:100%;font-size:14px}.dialog td,.dialog th{padding:7px 5px;text-align:left;border-bottom:1px solid #604735}.choice{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.choice button{flex:1 1 110px}.slots{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.slot{border:1px dashed #c99c66;padding:12px;min-width:80px;flex:1;text-align:center;border-radius:6px}.notice{padding:10px;border-left:3px solid var(--gold);background:#443024;margin:10px 0}.win{text-align:center;padding:20px 4px}.win h2{font-size:30px}.code{font:700 clamp(20px,5vw,30px) Georgia;color:#f8d38b;letter-spacing:2px;padding:12px;border:1px dashed #c69a56}.mapnote{font-size:13px;text-align:center;color:#c6ad8f;margin-top:6px}@media(max-width:600px){.wrap{padding:7px}.scene{border-width:2px}.dialog{padding:14px}.dialog h2{font-size:21px}.btn{padding:10px}.toolbar{gap:6px}}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1c1311">
+<title>Escape the Sanctuary — Plague Protocol</title>
+<style>
+:root{
+  --soot:#1c1311; --soot2:#2a1c17; --leather:#33221a; --ox:#6b1f22; --ox-dark:#3d0f12;
+  --brass:#c9a25a; --brass-hi:#f0cf86; --parch:#ecdfc2; --parch2:#dcc79f;
+  --ink:#2b1a12; --ink-soft:#5f4532; --blood:#8e2129;
+  --serif:"Palatino Linotype","Book Antiqua",Palatino,"URW Palladio L",P052,Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;background:#120c0a radial-gradient(ellipse at 50% 0,#3a2219 0,#1c1311 55%,#0f0908 100%) fixed;color:var(--parch);font:17px/1.5 var(--serif)}
+body.locked{overflow:hidden}
+button{font:inherit;color:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 
-/* Portrait-first, proportional artwork and touch exploration */
-html,body{height:100%;height:100dvh;overflow:hidden}
-body{display:flex;flex-direction:column}
-header{flex:0 0 auto;padding:8px 12px;min-height:48px}
-header small{display:none}
-header strong{font-size:clamp(15px,4vw,21px)}
-.wrap{flex:1;min-height:0;width:100%;max-width:750px;margin:0 auto;padding:5px 7px 8px;display:flex;flex-direction:column}
-.scene{flex:1;min-height:0;width:100%;aspect-ratio:auto;touch-action:none;border-radius:8px;overflow:hidden;position:relative;cursor:grab;background:#0b0908}
-.scene:active{cursor:grabbing}
-.stage{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
-.stage img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
-.stage .hot{z-index:2;touch-action:none}
-.stage .hot:hover{background:#ffce4d12}
-.mapnote,.toolbar,.wrap>.panel{display:none!important}
-.hud{display:flex;align-items:center;gap:7px;justify-content:space-between;min-height:46px;padding:4px 1px;color:var(--gold);font-size:12px}
-.hud .btn{padding:7px 9px;min-height:38px;font-size:12px}
-.hud .hint{display:none}
-.overlay{z-index:30}.dialog{width:min(610px,95vw);max-height:87dvh}
-.inventory-grid{display:flex;flex-wrap:wrap;gap:8px}
-.invpiece{border:1px solid #9a784c;border-radius:8px;background:#39271d;color:#ffe2b2;padding:9px;min-height:48px}
-.invpiece.selected{outline:2px solid #f6d184}
-.cross{display:grid;grid-template-columns:repeat(3,minmax(70px,100px));grid-template-rows:repeat(3,72px);justify-content:center;gap:5px;margin:14px auto}
-.cross .socket{border:2px solid #a78356;border-radius:10px;background:#1b1513;color:#eed8bd;font-size:13px;min-width:0;padding:3px}
-.cross .socket:nth-child(1){grid-column:2;grid-row:1}.cross .socket:nth-child(2){grid-column:3;grid-row:2}.cross .socket:nth-child(3){grid-column:2;grid-row:3}.cross .socket:nth-child(4){grid-column:1;grid-row:2}
-.cross .socket.filled{background:var(--piece);color:white;text-shadow:0 1px 3px black}
-@media(max-width:390px){header{padding:6px 8px}.hud{font-size:11px}.hud .btn{padding:6px 7px}}
-@media(max-height:480px){.dialog{padding:10px;font-size:14px}.dialog h2{font-size:19px}}
-</style></head><body><header><div><strong>☠ ESCAPE THE SANCTUARY</strong><small>Plague Protocol · A Gremlins challenge</small></div><button class="btn ghost" id="restart">Restart</button></header><main class="wrap"><div class="scene" id="scene"></div><div class="hud"><span id="roomlabel">Room 1</span><span class="hint">Tap · Pinch · Drag</span><button class="btn ghost" id="bag">🎒 Inventory</button><button class="btn ghost" id="fit">Fit</button></div><div class="mapnote">Tap the labelled objects in the scene to investigate. You can also use the object list below.</div><div class="toolbar" id="actions"></div><section class="panel"><h3>🎒 Inventory</h3><div class="items" id="inventory"></div></section><section class="panel"><h3>📜 Journal</h3><div class="items" id="journal"></div></section><div class="panel small muted" id="status"></div></main><div id="modal"></div><script>
-'use strict';const KEY='gremlins-plague-protocol-final-v1';const initial=()=>({room:1,items:[],notes:[],flags:{},brew:[],gate:[],glass:[null,null,null,null],selected:null,finished:false,foundGlass:[]});let S;try{S={...initial(),...JSON.parse(localStorage.getItem(KEY)||'null')}}catch{S=initial()}if(!S||!S.flags)S=initial();const save=()=>localStorage.setItem(KEY,JSON.stringify(S));const has=x=>S.items.includes(x);const add=x=>{if(!has(x))S.items.push(x);save()};const flag=x=>!!S.flags[x];const setflag=x=>{S.flags[x]=true;save()};const note=(title,body)=>{if(!S.notes.some(n=>n.title===title))S.notes.push({title,body});save()};const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const btn=(text,fn,disabled=false)=>`<button class="btn" ${disabled?'disabled':''} data-fn="${fn}">${esc(text)}</button>`;const close=()=>{document.getElementById('modal').innerHTML=''};const show=(title,body,buttons='')=>{document.getElementById('modal').innerHTML=`<div class="overlay"><div class="dialog" role="dialog" aria-modal="true"><h2>${title}</h2>${body}<footer>${buttons||btn('Close','close')}</footer></div></div>`};const msg=(title,body)=>show(title,`<p>${body}</p>`);const table=(heads,rows)=>`<table><tr>${heads.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</table>`;
-const objects={1:[['Patient Records',17,78,22,16,'ledger'],['Patients',6,36,52,34,'patients'],['Medicine Chest',70,65,29,29,'chest'],['Door to Apothecary',79,27,21,40,'door'],['Tapestry',2,2,32,32,'tapestry'],['Bloodstained Cloth',43,79,24,18,'cloth'],['Treatment Guide',1,74,22,18,'guide'],['Bed Markings',25,43,39,35,'marks']],2:[['Ingredient Shelves',17,7,67,45,'jars'],['Experiment Journal',3,72,32,24,'experiments'],['Recipe Book',61,70,35,27,'recipes'],['Cauldron',31,44,45,36,'cauldron'],['Brewing Inscription',40,55,25,15,'breworder'],['Suspicious Phial',2,52,20,22,'phial']],3:[['Sick Guard',2,41,33,31,'guard'],['Guard’s Desk',3,69,62,29,'desk'],['Pink Cat',65,62,35,29,'cat'],['Supply Crates',63,42,36,19,'crates'],['Gate Mechanism',27,4,70,43,'gate'],['Old Watch Ledger',29,79,28,15,'oldwatch'],['Rusty Key',1,72,17,18,'rusty']],4:[['Empty Cross Sockets',27,3,50,34,'window'],['Quarantine Notice',0,29,24,24,'notice'],['Reliquary',0,49,34,26,'reliquary'],['Loose Floor Tile',36,84,36,16,'tile'],['Locked Cabinet',78,38,22,27,'cabinet'],['Mechanical Lever',79,58,21,26,'lever'],['Exit Doors',29,35,48,43,'exitdoor']] };const descriptions={1:'Find who swallowed the false cure. Unlock the medicine chest.',2:'Investigate the experiments. Brew the only effective antidote.',3:'Revive the guard, repair the gate, and restore the watch.',4:'Restore the four witnesses around the cross. Break the last seal.'};let camera={scale:1,x:0,y:0,base:1},gestures=new Map(),gestureStart=null,ignoreClickUntil=0;
-function resetCamera(){const scene=document.getElementById('scene'),w=scene.clientWidth,h=scene.clientHeight,imW=1024,imH=1536;camera.base=Math.min(w/imW,h/imH);camera.scale=1;camera.x=(w-imW*camera.base)/2;camera.y=(h-imH*camera.base)/2;applyCamera()}
-function applyCamera(){const stage=document.querySelector('.stage');if(stage)stage.style.transform=`translate(${camera.x}px,${camera.y}px) scale(${camera.base*camera.scale})`}
-function clampCamera(){const el=document.getElementById('scene'),w=1024*camera.base*camera.scale,h=1536*camera.base*camera.scale;camera.x=w<=el.clientWidth?(el.clientWidth-w)/2:Math.min(0,Math.max(el.clientWidth-w,camera.x));camera.y=h<=el.clientHeight?(el.clientHeight-h)/2:Math.min(0,Math.max(el.clientHeight-h,camera.y));applyCamera()}
-function zoomAt(factor,cx,cy){const prev=camera.base*camera.scale;const next=Math.max(1,Math.min(5,camera.scale*factor));const ratio=next/camera.scale;camera.x=cx-(cx-camera.x)*ratio;camera.y=cy-(cy-camera.y)*ratio;camera.scale=next;clampCamera()}
-function focusObject(id){const o=objects[S.room].find(o=>o[5]===id);if(!o)return;const el=document.getElementById('scene'),r=el.getBoundingClientRect();const cx=(o[1]+o[3]/2)/100*1024,cy=(o[2]+o[4]/2)/100*1536;camera.scale=Math.max(camera.scale,Math.min(3.1,Math.max(1.65,el.clientHeight/(o[4]/100*1536*camera.base)*.58)));camera.x=el.clientWidth/2-cx*camera.base*camera.scale;camera.y=el.clientHeight/2-cy*camera.base*camera.scale;clampCamera()}
-function render(){document.getElementById('scene').innerHTML=`<div class="stage" style="width:1024px;height:1536px"><img draggable="false" alt="Room ${S.room}" src="assets/room${S.room}.webp">`+objects[S.room].map(([name,x,y,w,h,id])=>`<button class="hot" aria-label="Inspect ${esc(name)}" title="${esc(name)}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%" data-obj="${id}"></button>`).join('')+'</div>';document.getElementById('roomlabel').textContent=`Room ${S.room} / 4 — ${['','The Infirmary','The Apothecary','The Main Sanctuary Hall','The Final Escape'][S.room]}`;document.getElementById('actions').innerHTML='';document.getElementById('inventory').innerHTML='';document.getElementById('journal').innerHTML='';document.getElementById('status').textContent='';save();requestAnimationFrame(resetCamera)}
+/* ---------- header ---------- */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;
+  padding:6px max(10px,env(safe-area-inset-right)) 6px max(10px,env(safe-area-inset-left));
+  padding-top:max(6px,env(safe-area-inset-top));
+  background:linear-gradient(#4a1518,#2a0c0e);border-bottom:2px solid #7d5a2f;box-shadow:0 3px 12px rgba(0,0,0,.6)}
+.title{flex:1;min-width:0;line-height:1.15}
+.title b{display:block;font-weight:normal;font-style:italic;font-size:18px;color:var(--brass-hi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.title span{display:block;font-size:13px;color:#d8bf98;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbtn{position:relative;flex:0 0 auto;min-width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;
+  border:1px solid #9c7740;border-radius:22px;background:linear-gradient(#5a3a22,#33200f);color:#f6e2b8;font-size:15px;cursor:pointer}
+.tbtn svg{width:20px;height:20px}
+.tbtn.icon{padding:0;width:44px}
+.badge{position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--blood);border:1px solid #f0cf86;color:#fff;font-size:11px;line-height:17px;text-align:center;font-family:Georgia,serif}
+.badge:empty{display:none}
 
-function advance(n){S.room=n;S.brew=[];S.gate=[];close();render();window.scrollTo(0,0);msg(['','Infirmary','The Apothecary','The Main Sanctuary Hall','The Sanctuary Entrance'][n],descriptions[n])}
-const mappings={Crow:4,Moon:8,Sun:1,Serpent:6,Gravebloom:7,Frostmoss:2,Emberroot:5,Silverleaf:9};
-function inspect(id){switch(S.room){case 1:return room1(id);case 2:return room2(id);case 3:return room3(id);case 4:return room4(id)}}
-function room1(id){switch(id){case'ledger':note('Patient ledger','Aldric — blackened fingers — Silverleaf — Moon bed. Branna — burning fever — Emberroot — Sun bed. Corvin — violent coughing — Gravebloom — Crow bed. Daria — shivering — Frostmoss — Serpent bed.');return show('Healer’s Ledger',table(['Patient','Symptoms','Given','Bed'],[['Aldric','Blackened fingers','Silverleaf','Moon'],['Branna','Burning fever','Emberroot','Sun'],['Corvin','Violent coughing','Gravebloom','Crow'],['Daria','Shivering','Frostmoss','Serpent']])) ;case'guide':note('Treatment guide','Blackened fingers → Silverleaf; burning fever → Emberroot; shivering → Gravebloom; violent coughing → Frostmoss.');return show('Treatment Guide',table(['Symptom','Correct treatment'],[['Blackened fingers','Silverleaf'],['Burning fever','Emberroot'],['Shivering','Gravebloom'],['Violent coughing','Frostmoss']]));case'patients':note('Bedside evidence','Corvin: empty cup stained with Gravebloom. Daria: sealed, unopened Frostmoss packet. Night healer: “Only one patient swallowed the wrong medicine. The other never received their dose.”');return show('The Patients','<p>Corvin’s bedside cup is empty, with dark Gravebloom residue at its base.</p><p>Beside Daria lies an <b>unopened</b>, sealed Frostmoss packet.</p><p>A night healer’s note reads: <i>“Only one patient swallowed the wrong medicine. The other never received their dose.”</i></p>');case'marks':note('Number carvings','Bed marks: Crow 4, Moon 8, Sun 1, Serpent 6. Remedies: Gravebloom 7, Frostmoss 2, Emberroot 5, Silverleaf 9.');return show('Carvings in the Beams',table(['Mark','Number'],Object.entries(mappings)));case'chest':return show('Locked Medicine Chest','<p>Engraved on the lock:</p><div class="notice">For the patient who <b>swallowed</b> the false cure: first the mark upon their bed; second the medicine they were given; third the medicine that should have saved them.</div><p>Enter the three digits:</p><input id="code" inputmode="numeric" maxlength="3" pattern="[0-9]*" placeholder="000" style="width:100%;padding:13px;font-size:22px;background:#120f0e;color:white;border:1px solid #9b774c;border-radius:6px">',btn('Unlock chest','chestcheck')+btn('Close','close'));case'door':if(!has('Apothecary key'))return msg('Locked Door','A heavy iron lock bars the apothecary. Somewhere in this room there must be a key.');return advance(2);case'tapestry':return msg('Suspicious Tapestry','A faded tapestry depicts a plague doctor riding a goose. Behind it? Stone. Just stone.');case'cloth':return msg('Bloodstained Cloth','A gruesome rag. It smells of old iron and questionable laundry habits. Nothing is concealed beneath it.')}}
-function room2(id){switch(id){case'jars':return show('Six Ingredient Jars',table(['Ingredient','Appearance'],[['Silverleaf','Pale leaves with metallic veins'],['Gravebloom','Purple flowers smelling of damp earth'],['Emberroot','Twisted red roots, warm to the touch'],['Frostmoss','Blue-grey moss, unnaturally cold'],['Nightshade','Black berries in dark liquid'],['Moonwater','Clear liquid with a silvery shimmer']]));case'experiments':{const b='Each ingredient has one primary effect; no two share an effect. Each successful property in a mixture comes from at least one of its ingredients. Effects do not cancel.';note('Experiment journal',b+' Trials: I Silverleaf+Gravebloom: blood yes, spread no, stable no. II Gravebloom+Emberroot: no/no/no. III Emberroot+Frostmoss: no/yes/no. IV Frostmoss+Nightshade: no/yes/no. V Nightshade+Moonwater: no/no/yes. VI Moonwater+Silverleaf: yes/no/yes.');return show('The Experiment Journal',`<p>${b}</p>`+table(['Trial','Ingredients','Blood','Spread','Stable'],[['I','Silverleaf + Gravebloom','✓','–','–'],['II','Gravebloom + Emberroot','–','–','–'],['III','Emberroot + Frostmoss','–','✓','–'],['IV','Frostmoss + Nightshade','–','✓','–'],['V','Nightshade + Moonwater','–','–','✓'],['VI','Moonwater + Silverleaf','✓','–','✓']]));}case'recipes':note('Old recipes','Healer’s Mercy: Silverleaf, Gravebloom, Moonwater. Crimson Remedy: Emberroot, Frostmoss, Moonwater. Silent Cure: Silverleaf, Frostmoss, Nightshade. The Silent Cure made patients look well, but the illness returned.');return show('The Old Recipe Book',table(['Recipe','Ingredients'],[['Healer’s Mercy','Silverleaf, Gravebloom, Moonwater'],['Crimson Remedy','Emberroot, Frostmoss, Moonwater'],['Silent Cure','Silverleaf, Frostmoss, Nightshade']])+'<p><i>“The Silent Cure fooled us. Their skin cleared, yet the sickness returned before dawn.”</i></p>');case'breworder':note('Brewing order','The new plague darkens the blood, spreads beneath the skin, and spoils medicine. Cauldron: first cleanse corruption, next halt the spread, last preserve the mixture.');return msg('Cauldron Inscription','The new plague blackens the blood, spreads beneath the skin, and spoils the remedy.<div class="notice">First, cleanse what has been corrupted.<br>Next, halt what seeks to spread.<br>Last, preserve what would otherwise perish.</div>');case'phial':return msg('The Green Phial','“ORIGINAL PLAGUE CURE” reads the label. Below, in smaller handwriting: “Results pending.” The liquid has eaten through the cork. Probably best not.');case'cauldron':return brewUI()}}
-const ing=['Silverleaf','Gravebloom','Emberroot','Frostmoss','Nightshade','Moonwater'];function brewUI(message=''){show('The Brewing Cauldron','<p>Select three different ingredients <b>in order</b>.</p><div class="slots">'+[0,1,2].map(i=>`<div class="slot">${i+1}. ${esc(S.brew[i]||'Empty')}</div>`).join('')+'</div><div class="choice">'+ing.map(x=>btn(x,'ingredient:'+x,S.brew.includes(x)||S.brew.length>=3)).join('')+'</div>'+(message?`<div class="notice">${message}</div>`:''),btn('Brew','brewcheck',S.brew.length!==3)+btn('Empty cauldron','brewreset')+btn('Close','close'))}
-function room3(id){switch(id){case'guard':if(flag('guard'))return msg('The Watchman','“I told you, the key is under the beast’s blankets. And don’t follow the old watch orders!”');if(!has('Antidote'))return msg('Sick Guard','The guard coughs weakly. He needs medicine — something stronger than the old cures.');setflag('guard');return msg('The Guard Revives','You administer the antidote. The guard blinks awake: <i>“The watchman’s seal is locked in my desk. I hid the key where the beast sleeps. The watch orders changed after the outbreak!”</i>');case'cat':if(!flag('guard'))return msg('The Pink Menace','The pink cat hisses and buries itself deeper into its blankets. Perhaps someone knows what it is guarding.');if(has('Iron key'))return msg('Pink Cat','The cat looks offended that you stole its shiny treasure.');add('Iron key');render();return msg('Under the Blankets','The cat swipes at your fingers, but you retrieve a <b>small iron key</b>. It is now in your inventory.');case'desk':if(!has('Iron key'))return msg('Locked Desk','The guard’s drawer is locked. A narrow iron keyhole is visible.');if(!flag('desk')){setflag('desk');add('Watchman’s seal');note('Revised watch orders','The Crow stands immediately before the Moon. The Moon takes the final watch. The old ledger is obsolete.');note('Seal engraving','The Serpent stands immediately before the Sun.');render()}return show('Guard’s Desk — Unlocked','<p>Inside you find the <b>watchman’s seal</b> and revised orders:</p><div class="notice">The Crow stands immediately before the Moon. The Moon takes the final watch.</div><p>On the reverse of the seal:</p><div class="notice">The Serpent stands immediately before the Sun.</div><p>A second, tiny engraving reads: <i>“The golden witness keeps vigil above all others.”</i></p>');case'oldwatch':note('Old watch ledger','Before the plague: Sun first, Serpent last, Crow before Moon. Clearly marked OBSOLETE.');return msg('Old Guard Ledger','<i>“Before the plague, the Sun began the watch, and the Serpent ended it. The Crow stood before the Moon.”</i><p>A red wax stamp reads <b>OBSOLETE — DO NOT USE</b>.</p>');case'crates':if(has('Brass cog'))return msg('Supply Crates','Only splinters and a loaf of bread with ambitions of sentience remain.');add('Brass cog');render();return msg('False Bottom','You lift a loose plank beneath the crates and find a <b>brass cog</b>. Also some mouldy bread. The bread stays.');case'rusty':return msg('Rusty Key','You try a corroded key hanging beside the hearth. It opens a tiny chest containing… another rusty key. This is going nowhere.');case'gate':if(!has('Brass cog'))return msg('Broken Gate','One brass cog is missing from the mechanism. It cannot turn.');if(!has('Watchman’s seal'))return msg('Sealed Gate','The cog fits! But the gate still requires the watchman’s seal.');return gateUI()}}
-const syms=['Sun','Moon','Crow','Serpent'];function gateUI(message=''){show('The Watchman’s Gate','<p>Fit the cog, arrange the four watches from first to last, and turn the seal.</p><div class="slots">'+[0,1,2,3].map(i=>`<div class="slot">${i+1}. ${S.gate[i]||'—'}</div>`).join('')+'</div><div class="choice">'+syms.map(x=>btn(x,'symbol:'+x,S.gate.includes(x)||S.gate.length>=4)).join('')+'</div>'+(message?`<div class="notice">${message}</div>`:''),btn('Turn seal','gatecheck',S.gate.length!==4)+btn('Reset symbols','gatereset')+btn('Close','close'))}
-const glassColors=['Gold','Red','Green','Blue'],glassHex={Gold:'#b28a35',Red:'#9f313b',Green:'#2d7750',Blue:'#315f9d'},glassNames={Gold:'Unicorn',Red:'Plague Doctor',Green:'Gremlin',Blue:'Taco'};
-function findPiece(color,heading,description){if(!S.foundGlass)S.foundGlass=[];if(!S.foundGlass.includes(color)){S.foundGlass.push(color);add(color+' '+glassNames[color]+' glass');render()}return msg(heading,description+'<p><b>'+color+' '+glassNames[color]+' stained-glass piece '+(S.foundGlass.filter(c=>c===color).length?'secured':'found')+'.</b></p>')}
-function room4(id){switch(id){case'notice':note('Quarantine order','The crimson witness faces the azure witness across the cross.');return show('Quarantine Notice','<p>The crimson witness must face the azure witness across the cross. Red and Blue belong opposite each other.</p>'+btn('Lift the loose seal','getred'));case'reliquary':return findPiece('Gold','The Reliquary','Inside an ornate reliquary rests a golden unicorn silhouette. An inscription says: “Gold watches from the highest place.”');case'tile':return findPiece('Green','Loose Floor Tile','Beneath a loose stone, a green gremlin silhouette. Scratched underneath: “The emerald follows immediately clockwise after crimson.”');case'cabinet':return findPiece('Blue','The Cabinet','The old cabinet yields a blue taco-shaped stained-glass piece. The cabinet door was never properly locked. Typical.');case'window':return glassUI();case'lever':if(S.glass.join('|')==='Gold|Red|Green|Blue')return action('glasscheck');return glassUI('The lever will not move until all four witnesses are in their correct sockets.');case'exitdoor':return msg('Sealed Exit','The heavy doors will only open once the stained-glass cross is restored and the lever is pulled.')}}
-function glassUI(message=''){const pieces=S.glass,found=S.foundGlass||[];const positions=['Top','Right','Bottom','Left'];const cells=positions.map((x,i)=>`<button class="socket ${pieces[i]?'filled':''}" style="${pieces[i]?'--piece:'+glassHex[pieces[i]]:''}" data-fn="place:${i}">${x}<br><b>${pieces[i]?glassNames[pieces[i]]:'Empty'}</b></button>`).join('');show('The Four Witnesses','<p>Find all four pieces in the room. Select a collected piece, then tap a socket. Tap a filled socket with nothing selected to remove it.</p><div class="inventory-grid">'+glassColors.map(c=>`<button class="invpiece ${S.selected===c?'selected':''}" data-fn="color:${c}" ${!found.includes(c)?'disabled':''} style="border-bottom:4px solid ${glassHex[c]}">${found.includes(c)?c+' '+glassNames[c]:'🔒 Unknown piece'}</button>`).join('')+'</div><div class="cross">'+cells+'</div><p class="small muted">Clockwise: Top → Right → Bottom → Left. Collected: '+found.length+'/4.</p>'+(message?`<div class="notice">${message}</div>`:''),btn('Pull the lever','glasscheck',pieces.some(x=>!x)||found.length!==4)+btn('Remove all pieces','glassreset')+btn('Close','close'))}
-function action(fn){if(fn==='close'){close();return}if(fn==='getred')return findPiece('Red','Hidden in the Quarantine Notice','Behind the wax seal lies the crimson plague-doctor mask.');if(fn.startsWith('obj:'))return inspect(fn.slice(4));if(fn.startsWith('note:')){const n=S.notes[+fn.slice(5)];return show(esc(n.title),`<p>${esc(n.body)}</p>`)}if(fn==='chestcheck'){const v=document.getElementById('code')?.value;if(v==='472'){add('Apothecary key');add('Torn quarantine document');note('Quarantine fragment','“The crimson witness shall forever face the azure witness across the holy cross.” Red and Blue must be opposite.');setflag('chest');render();return msg('Chest Unlocked!','Inside: an <b>apothecary key</b> and a torn quarantine document. The document reads: <i>“The crimson witness shall forever face the azure witness across the holy cross.”</i>')}return msg('The Lock Holds','The chest refuses to open. Recheck who actually swallowed the wrong medicine, and the number carvings.')}if(fn.startsWith('ingredient:')){S.brew.push(fn.slice(11));save();return brewUI()}if(fn==='brewreset'){S.brew=[];save();return brewUI()}if(fn==='brewcheck'){if(S.brew.join('|')==='Silverleaf|Frostmoss|Moonwater'){add('Antidote');add('Sanctuary map fragment');note('Stained-glass diagram','Follow the sun’s path clockwise around the cross. The emerald witness comes directly after the crimson. Green is immediately clockwise after Red.');setflag('brewed');render();return show('The True Cure!','<p>The antidote glimmers silver. A concealed drawer clicks open.</p><p>You collect the <b>antidote</b> and a <b>stained-glass diagram</b>:</p><div class="notice">Follow the sun’s path clockwise around the cross. The emerald witness comes directly after the crimson.</div>',btn('Enter the Main Hall','next:3'))}const bad=S.brew.includes('Nightshade')?'The potion turns purple. Then your skin turns purple. Not ideal.':S.brew.includes('Emberroot')?'The cauldron erupts. Your eyebrows have escaped before you.':'The brew curdles into a foul sludge. Even Eddie would refuse to drink it.';S.brew=[];save();return brewUI(bad)}if(fn.startsWith('symbol:')){S.gate.push(fn.slice(7));save();return gateUI()}if(fn==='gatereset'){S.gate=[];save();return gateUI()}if(fn==='gatecheck'){if(S.gate.join('|')==='Serpent|Sun|Crow|Moon'){note('Golden witness','A tiny engraving on the watchman’s seal: “The golden witness keeps vigil above all others.” Gold belongs at the top of the cross.');setflag('gate');render();return show('The Gate Opens','<p>The cog catches. The seal turns. The heavy iron gate groans open.</p><p>On the reverse of the seal you notice another engraving:</p><div class="notice">The golden witness keeps vigil above all others.</div>',btn('Enter the Sanctuary Entrance','next:4'))}S.gate=[];save();return gateUI('The mechanism jams and an enormous bell rings. Somewhere, a Gremlin swears.')}if(fn.startsWith('color:')){const c=fn.slice(6);if(!(S.foundGlass||[]).includes(c))return glassUI('Find that piece first.');S.selected=S.selected===c?null:c;save();return glassUI()}if(fn.startsWith('place:')){let i=+fn.slice(6);if(S.selected){if(!(S.foundGlass||[]).includes(S.selected))return glassUI('Find that piece first.');S.glass=S.glass.map(c=>c===S.selected?null:c);S.glass[i]=S.selected;S.selected=null}else S.glass[i]=null;save();return glassUI()}if(fn==='glassreset'){S.glass=[null,null,null,null];S.selected=null;save();return glassUI()}if(fn==='glasscheck'){if((S.foundGlass||[]).length!==4)return glassUI('You must collect all four stained-glass pieces first.');if(S.glass.join('|')==='Gold|Red|Green|Blue'){S.finished=true;save();render();return show('YOU ESCAPED THE SANCTUARY!','<div class="win"><p>Against all odds, terrible medicine and one extremely judgmental pink cat, you survived.</p><p class="muted">YOUR ESCAPE CODE</p><div class="code">GREMLIN-ESCAPED</div><p><b>DM THE EVIL OVERLORD</b> your escape code to claim your victory. 😈</p><p class="small muted">First correct DM wins, subject to the competition rules.</p></div>',btn('Copy escape code','copycode')+btn('Close','close'))}return glassUI('The glass flashes and the doors stay sealed. The bell tolls. Revisit your collected clues.')}if(fn==='copycode'){navigator.clipboard?.writeText('GREMLIN-ESCAPED').then(()=>msg('Copied!','DM the Evil Overlord your escape code.')).catch(()=>msg('Your Code','GREMLIN-ESCAPED — copy this and DM the Evil Overlord.'));return}if(fn.startsWith('next:'))return advance(+fn.slice(5))}
-document.addEventListener('click',e=>{const t=e.target.closest('[data-fn],[data-obj]');if(!t)return;if(t.dataset.obj){if(Date.now()<ignoreClickUntil)return;focusObject(t.dataset.obj);inspect(t.dataset.obj)}else action(t.dataset.fn)});
-const scene=document.getElementById('scene');scene.addEventListener('pointerdown',e=>{if(!e.target.closest('[data-obj]'))scene.setPointerCapture(e.pointerId);gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY});gestureStart=null});scene.addEventListener('pointermove',e=>{if(!gestures.has(e.pointerId))return;const old=gestures.get(e.pointerId);const dx=e.clientX-old.x,dy=e.clientY-old.y;old.x=e.clientX;old.y=e.clientY;if(Math.hypot(e.clientX-old.sx,e.clientY-old.sy)>9)ignoreClickUntil=Date.now()+400;if(gestures.size===1){camera.x+=dx;camera.y+=dy;clampCamera()}else if(gestures.size===2){const a=[...gestures.values()],dist=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(gestureStart){const r=scene.getBoundingClientRect();zoomAt(dist/gestureStart.dist,(a[0].x+a[1].x)/2-r.left,(a[0].y+a[1].y)/2-r.top)}gestureStart={dist};ignoreClickUntil=Date.now()+500}});for(const evt of ['pointerup','pointercancel','lostpointercapture'])scene.addEventListener(evt,e=>{gestures.delete(e.pointerId);gestureStart=null});scene.addEventListener('wheel',e=>{e.preventDefault();const r=scene.getBoundingClientRect();zoomAt(e.deltaY<0?1.15:1/1.15,e.clientX-r.left,e.clientY-r.top)},{passive:false});let lastTap=0;scene.addEventListener('pointerup',e=>{if(e.pointerType==='touch'&&Date.now()-lastTap<280){resetCamera();ignoreClickUntil=Date.now()+500}lastTap=Date.now()});window.addEventListener('resize',()=>requestAnimationFrame(resetCamera));document.getElementById('fit').onclick=resetCamera;document.getElementById('bag').onclick=()=>show('🎒 Inventory',S.items.length?'<div class="inventory-grid">'+S.items.map(x=>'<div class="invpiece">'+esc(x)+'</div>').join('')+'</div>':'<p>Nothing collected yet.</p>');document.getElementById('restart').onclick=()=>{show('Restart the Challenge?','<p>This will erase your saved progress on this device.</p>',btn('Yes, start over','confirmrestart')+btn('Cancel','close'))};const originalAction=action;action=function(fn){if(fn==='confirmrestart'){S=initial();save();close();render();return msg('A New Victim','You wake in the infirmary. The plague bells are ringing. Again.')}return originalAction(fn)};render();if(S.finished)msg('You Escaped!','Your escape code is <b>GREMLIN-ESCAPED</b>. DM the Evil Overlord!');
-</script></body></html>
+/* ---------- room artwork ---------- */
+main{width:100%;max-width:560px;margin:0 auto;padding-bottom:max(84px,calc(env(safe-area-inset-bottom) + 84px))}
+.stage{position:relative;width:100%;line-height:0;background:#000;box-shadow:0 8px 30px rgba(0,0,0,.7)}
+.stage>img{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+
+.hs{position:absolute;width:44px;height:44px;margin:0;padding:0;border:0;background:none;transform:translate(-50%,-50%);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3}
+.hs.compact{width:36px;height:36px}
+.lens{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 38% 32%,#4a3324 0,#150c08 72%);border:1.5px solid var(--brass-hi);
+  box-shadow:0 0 0 2px rgba(0,0,0,.6),0 0 9px 2px rgba(255,186,90,.55);animation:glint 3.2s ease-in-out infinite}
+.hs:nth-child(2n) .lens{animation-delay:-1.1s}.hs:nth-child(3n) .lens{animation-delay:-2.2s}
+.lens svg{width:14px;height:14px}
+.hs:hover .lens,.hs:focus-visible .lens{transform:scale(1.15);border-color:#fff}
+.hs:focus-visible{outline:none}.hs:focus-visible .lens{outline:2px solid #fff;outline-offset:3px}
+@keyframes glint{0%,100%{box-shadow:0 0 0 2px rgba(0,0,0,.6),0 0 7px 1px rgba(255,186,90,.4)}50%{box-shadow:0 0 0 2px rgba(0,0,0,.6),0 0 13px 4px rgba(255,200,110,.8)}}
+
+/* stained-glass sockets (room 4) */
+.sock{position:absolute;width:13%;height:8.667%;transform:translate(-50%,-50%);border-radius:50%;border:0;padding:0;margin:0;background:transparent;cursor:pointer;z-index:2}
+.sock svg{display:block;width:100%;height:100%;filter:drop-shadow(0 0 6px rgba(0,0,0,.6))}
+.sock.armed{box-shadow:0 0 0 2px var(--brass-hi),0 0 18px 5px rgba(255,205,120,.7);animation:arm 1.4s ease-in-out infinite}
+.sock:focus-visible{outline:2px dashed #fff;outline-offset:2px}
+@keyframes arm{50%{box-shadow:0 0 0 2px #fff,0 0 26px 8px rgba(255,215,140,.9)}}
+.stage.flash .sock svg{animation:flash .5s 3}
+@keyframes flash{50%{filter:brightness(2.4) drop-shadow(0 0 14px #fff)}}
+.glow{position:absolute;left:31%;top:28%;width:44%;height:40%;pointer-events:none;opacity:0;transition:opacity 2.5s ease;
+  background:radial-gradient(ellipse at 50% 62%,rgba(255,244,214,.95) 0,rgba(255,206,120,.7) 30%,rgba(255,160,60,.25) 55%,rgba(255,150,50,0) 72%);mix-blend-mode:screen;z-index:1}
+.stage.won .glow{opacity:1}
+
+/* ---------- placing bar ---------- */
+.placing{position:fixed;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:25;width:min(540px,calc(100% - 16px));
+  display:flex;align-items:center;gap:10px;padding:8px 8px 8px 10px;background:#2e1d14;border:1px solid var(--brass);border-radius:30px;box-shadow:0 6px 24px rgba(0,0,0,.7);font-size:15px}
+.placing svg{width:38px;height:38px;flex:0 0 auto}
+.placing p{margin:0;flex:1;line-height:1.25}
+.placing[hidden]{display:none}
+
+/* ---------- toast ---------- */
+.toast{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom));transform:translate(-50%,8px);z-index:60;max-width:calc(100% - 24px);
+  padding:9px 16px;border-radius:20px;background:#2e1d14;border:1px solid var(--brass);color:#f6e2b8;font-size:15px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- dialogs ---------- */
+.ov{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;
+  padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));background:rgba(8,4,3,.74)}
+.ov.sheetwrap{align-items:flex-end;padding:0}
+.dlg{position:relative;width:min(520px,100%);max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);display:flex;flex-direction:column;
+  color:var(--ink);border-radius:6px;overflow:hidden;
+  background:#ecdfc2 radial-gradient(ellipse at 30% 10%,#f6ecd4 0,#e8d8b4 55%,#d6c08f 100%);
+  box-shadow:0 0 0 1px #5b3f22,0 0 0 4px #2a1a10,0 0 0 5px #8a6a3a,0 18px 50px rgba(0,0,0,.85);animation:rise .18s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.dlg:focus{outline:none}
+.dh{padding:14px 52px 4px 18px;flex:0 0 auto}
+.dh h2{margin:0;font-weight:normal;font-style:italic;font-size:23px;line-height:1.2;color:var(--ox)}
+.db{padding:4px 18px 10px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1 1 auto;min-height:0}
+.db p{margin:8px 0}
+.df{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:8px;padding:10px 18px 14px;border-top:1px solid rgba(91,63,34,.35);background:rgba(120,85,45,.08)}
+.x{position:absolute;top:8px;right:8px;width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;
+  background:radial-gradient(circle at 40% 35%,#b23a3f,#6b1f22 60%,#40100f);color:#f7d9b0;font-size:20px;line-height:40px;box-shadow:0 2px 4px rgba(0,0,0,.4)}
+.b{min-height:44px;padding:8px 15px;border-radius:4px;border:1px solid #5b3f22;background:#3c271a;color:#f6e6c6;cursor:pointer;font-size:16px}
+.b.pri{background:linear-gradient(#86292d,#5c1719);border-color:#3d0f12}
+.b.light{background:transparent;color:var(--ink);border-color:#8a6a48}
+.b:disabled{opacity:.38;cursor:not-allowed}
+.b:focus-visible,.x:focus-visible,.tbtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.quote{margin:10px 0;padding:8px 12px;border-left:3px solid var(--blood);background:rgba(107,31,34,.08);font-style:italic}
+.note{margin:10px 0;padding:8px 12px;border-radius:4px;background:#3c271a;color:#f6e6c6}
+.note.bad{background:#5c1719}
+.got{margin:10px 0;padding:8px 12px;border:1px dashed #8a6a48;border-radius:4px}
+.muted{color:var(--ink-soft)}.small{font-size:14px}
+/* table wrapper scrolls only as a last resort */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:15px;margin:6px 0}
+th{text-align:left;font-weight:normal;font-style:italic;color:var(--ox);border-bottom:1.5px solid #8a6a48;padding:5px 4px}
+td{padding:6px 4px;border-bottom:1px solid rgba(91,63,34,.3);vertical-align:top}
+.code-in{width:100%;margin:6px 0;padding:10px;font:28px/1.2 var(--serif);letter-spacing:.5em;text-align:center;color:var(--ink);background:#f8f0dd;border:2px solid #8a6a48;border-radius:4px}
+.code-in:focus{outline:2px solid var(--ox)}
+
+/* slot puzzles */
+.slots{display:grid;gap:6px;margin:10px 0}
+.slots.s3{grid-template-columns:repeat(3,1fr)}.slots.s4{grid-template-columns:repeat(4,1fr)}
+.slot{min-height:56px;padding:4px;border:1.5px dashed #8a6a48;border-radius:4px;background:rgba(255,255,255,.25);color:var(--ink);font-size:14px;line-height:1.2;cursor:pointer}
+.slot.full{border-style:solid;background:#3c271a;color:#f6e6c6}
+.slot small{display:block;color:inherit;opacity:.7;font-size:12px}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:8px 0}
+.choices .b{font-size:15px;padding:6px 8px}
+
+/* glass dialog */
+.pieces{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:8px 0}
+.pc{display:flex;align-items:center;gap:8px;min-height:48px;padding:4px 8px;border:1px solid #8a6a48;border-radius:4px;background:rgba(255,255,255,.3);color:var(--ink);font-size:14px;line-height:1.2;text-align:left;cursor:pointer}
+.pc svg{width:34px;height:34px;flex:0 0 auto}
+.pc.sel{outline:3px solid var(--ox);background:#f8eed6}
+.pc:disabled{opacity:.5;cursor:default}
+.pc small{display:block;opacity:.75;font-size:12px}
+.cross{display:grid;grid-template-columns:repeat(3,76px);grid-template-rows:repeat(3,76px);justify-content:center;gap:4px;margin:10px auto}
+.cs{border-radius:50%;border:2px dashed #8a6a48;background:rgba(40,25,15,.15);padding:0;cursor:pointer;color:var(--ink-soft);font-size:12px}
+.cs svg{width:100%;height:100%;display:block}
+.cs.full{border:2px solid #2a1a10}
+.cs:nth-child(1){grid-area:1/2}.cs:nth-child(2){grid-area:2/3}.cs:nth-child(3){grid-area:3/2}.cs:nth-child(4){grid-area:2/1}
+
+/* satchel sheet */
+.sheet{width:min(560px,100%);max-height:78vh;max-height:78dvh;display:flex;flex-direction:column;color:var(--parch);
+  background:#33221a linear-gradient(#3d281d,#26180f);border-top:3px solid var(--brass);border-radius:14px 14px 0 0;
+  box-shadow:0 -10px 40px rgba(0,0,0,.8);padding-bottom:env(safe-area-inset-bottom);animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.sheet .dh h2{color:var(--brass-hi)}
+.sheet .db{padding-bottom:16px}
+.inv{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:6px}
+.it{display:flex;align-items:center;gap:8px;min-height:56px;padding:6px 10px;border:1px solid #7d5a2f;border-radius:6px;background:rgba(0,0,0,.25);color:#f6e2b8;text-align:left;cursor:pointer;font-size:15px;line-height:1.2}
+.it .ic{font-size:24px;width:34px;text-align:center;flex:0 0 auto}
+.it svg{width:34px;height:34px;flex:0 0 auto}
+.it.sel{outline:2px solid var(--brass-hi)}
+.sheet .muted{color:#c9ad86}
+
+/* victory */
+.win{text-align:center}
+.esc{margin:10px auto;padding:10px;border:2px dashed var(--ox);font-size:24px;letter-spacing:2px;color:var(--ox);user-select:all;-webkit-user-select:all;word-break:break-all}
+
+@media (max-width:370px){table{font-size:13.5px}th,td{padding:5px 3px}.db{padding-left:14px;padding-right:14px}.title b{font-size:16px}.title span{font-size:12px}.tbtn .lbl{display:none}.tbtn{padding:0;width:44px}.cross{grid-template-columns:repeat(3,68px);grid-template-rows:repeat(3,68px)}.dh h2{font-size:21px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="title"><b>Escape the Sanctuary</b><span id="roomlabel">Room 1 of 4: The Infirmary</span></div>
+  <button class="tbtn icon" id="restartBtn" aria-label="Restart the game" title="Restart">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+  </button>
+  <button class="tbtn" id="satchelBtn" aria-label="Open inventory">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 7V5.5a4 4 0 0 1 8 0V7"/><path d="M3.5 8h17l-1.3 11.2a2 2 0 0 1-2 1.8H6.8a2 2 0 0 1-2-1.8z"/><path d="M3.5 8 12 13l8.5-5"/><rect x="10.3" y="12.2" width="3.4" height="3" rx=".6"/></svg>
+    <span class="lbl">Inventory</span><span class="badge" id="badge"></span>
+  </button>
+</header>
+<main><div class="stage" id="stage"></div></main>
+<div class="placing" id="placing" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="modal"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   ESCAPE THE SANCTUARY — PLAGUE PROTOCOL
+   Content and logic preserved from the recovered implementation.
+   ===================================================================== */
+const KEY = 'gremlins-plague-protocol-pages-v2';
+const ESCAPE_CODE = 'GREMLIN-ESCAPED';
+
+/* ---------- state ---------- */
+const fresh = () => ({v:2, room:1, items:[], flags:{}, brew:[], gate:[], found:[], glass:[null,null,null,null], selected:null, finished:false});
+function load(){
+  try{
+    const r = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if(r && r.v === 2){
+      const s = Object.assign(fresh(), r);
+      if(![1,2,3,4].includes(s.room)) return fresh();
+      for(const k of ['items','brew','gate','found']) if(!Array.isArray(s[k])) s[k] = [];
+      if(!Array.isArray(s.glass) || s.glass.length !== 4) s.glass = [null,null,null,null];
+      if(!s.flags || typeof s.flags !== 'object') s.flags = {};
+      return s;
+    }
+  }catch(e){}
+  return fresh();
+}
+let S = load();
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+const has = i => S.items.includes(i);
+const give = i => { if(!has(i)) S.items.push(i); };
+const take = i => { S.items = S.items.filter(x => x !== i); };
+const flag = f => !!S.flags[f];
+const setFlag = f => { S.flags[f] = true; };
+
+/* ---------- static data ---------- */
+const ROOM_NAMES = ['', 'The Infirmary', 'The Apothecary', 'The Main Sanctuary Hall', 'The Final Escape'];
+const INTRO_TITLES = ['', 'Infirmary', 'The Apothecary', 'The Main Sanctuary Hall', 'The Sanctuary Entrance'];
+const INTROS = ['',
+  'Find who swallowed the false cure. Unlock the medicine chest.',
+  'Investigate the experiments. Brew the only effective antidote.',
+  'Revive the guard, repair the gate, and restore the watch.',
+  'Restore the four witnesses around the cross. Break the last seal.'];
+
+/* Magnifier centres, in percent of the 1024×1536 artwork. */
+const HOTSPOTS = {
+  1: [
+    {id:'tapestry', name:'Tapestry', x:18, y:13},
+    {id:'patients', name:'Patients', x:21, y:42},
+    {id:'marks',    name:'Bed markings', x:41, y:46},
+    {id:'door',     name:'Door to the Apothecary', x:87, y:28},
+    {id:'chest',    name:'Medicine chest', x:79, y:62},
+    {id:'ledger',   name:'Patient records (healer’s ledger)', x:45, y:65},
+    {id:'guide',    name:'Treatment guide', x:19, y:68},
+    {id:'cloth',    name:'Bloodstained cloth', x:51, y:80}
+  ],
+  2: [
+    {id:'phial',       name:'Suspicious green phial', x:68, y:23},
+    {id:'jars',        name:'Ingredient shelves', x:45, y:27},
+    {id:'door',        name:'Doorway to the Main Hall', x:93, y:38},
+    {id:'cauldron',    name:'Cauldron', x:41, y:50},
+    {id:'breworder',   name:'Cauldron inscription', x:57, y:55},
+    {id:'recipes',     name:'Old recipe book', x:79, y:67},
+    {id:'experiments', name:'Experiment journal', x:20, y:69}
+  ],
+  3: [
+    {id:'gate',     name:'Gate mechanism', x:60, y:27},
+    {id:'guard',    name:'Sick guard', x:20, y:52},
+    {id:'crates',   name:'Supply crates', x:68, y:56},
+    {id:'cat',      name:'Pink cat and blankets', x:87, y:65},
+    {id:'rusty',    name:'Rusty key and tiny chest', x:44, y:66},
+    {id:'oldwatch', name:'Old watch ledger', x:31, y:73},
+    {id:'desk',     name:'Guard’s desk', x:35, y:83}
+  ],
+  4: [
+    {id:'window',    name:'Empty cross sockets', x:53.2, y:19.6, compact:true},
+    {id:'notice',    name:'Quarantine notice', x:8, y:38},
+    {id:'cabinet',   name:'Locked cabinet', x:94, y:47},
+    {id:'exitdoor',  name:'Exit doors', x:53, y:55},
+    {id:'lever',     name:'Mechanical lever', x:85, y:58},
+    {id:'reliquary', name:'Reliquary', x:11, y:58},
+    {id:'tile',      name:'Loose floor tile', x:63, y:88}
+  ]
+};
+/* Inner glass discs measured on room4.png: [Top, Right, Bottom, Left] */
+const SOCKETS = [{x:53.2,y:11.3},{x:65.3,y:19.6},{x:53.2,y:27.9},{x:41.2,y:19.6}];
+const POS = ['Top','Right','Bottom','Left'];
+
+const mappings = {Crow:4, Moon:8, Sun:1, Serpent:6, Gravebloom:7, Frostmoss:2, Emberroot:5, Silverleaf:9};
+const ING = ['Silverleaf','Gravebloom','Emberroot','Frostmoss','Nightshade','Moonwater'];
+const SYMS = ['Sun','Moon','Crow','Serpent'];
+
+const GLASS = ['Gold','Red','Green','Blue'];
+const GLASS_NAME = {Gold:'Unicorn', Red:'Plague Doctor', Green:'Gremlin', Blue:'Taco'};
+const GLASS_COL = {Gold:['#ffe9a3','#d6a21e','#7a5608'], Red:['#ff9a9a','#b3232c','#5a0a10'], Green:['#a8f0b8','#2e9152','#0d4322'], Blue:['#a9c9ff','#2e63c0','#0c2a63']};
+const pieceLabel = c => `${c} ${GLASS_NAME[c]}`;
+
+const ITEMS = {
+  apokey:     {name:'Apothecary key', icon:'🗝️', desc:'<p>A heavy iron key from the medicine chest. It should fit the apothecary door.</p>'},
+  quarantine: {name:'Torn quarantine document', icon:'📜', desc:'<div class="quote">“The crimson witness shall forever face the azure witness across the holy cross.”</div>'},
+  antidote:   {name:'Antidote', icon:'🧪', desc:'<p>The true cure. It glimmers silver.</p>'},
+  diagram:    {name:'Stained-glass diagram', icon:'🗺️', desc:'<p>A sanctuary map fragment showing a stained-glass cross.</p><div class="quote">“Follow the sun’s path clockwise around the cross. The emerald witness comes directly after the crimson.”</div>'},
+  ironkey:    {name:'Iron key', icon:'🔑', desc:'<p>A small iron key, retrieved from beneath the pink cat’s blankets.</p>'},
+  orders:     {name:'Revised watch orders', icon:'📃', desc:'<div class="quote">“The Crow stands immediately before the Moon. The Moon takes the final watch.”</div>'},
+  seal:       {name:'Watchman’s seal', icon:'🏵️', desc:'<p>On the reverse:</p><div class="quote">“The Serpent stands immediately before the Sun.”</div><p>A second, tiny engraving reads:</p><div class="quote">“The golden witness keeps vigil above all others.”</div>'},
+  cog:        {name:'Brass cog', icon:'⚙️', desc:'<p>A brass cog from the false bottom of the supply crates. Something mechanical is missing one of these.</p>'}
+};
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const table = (heads, rows) => `<div class="tw"><table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const B = (label, fn, opt = {}) => ({label, fn, ...opt});
+const CLOSE = () => B('Close', 'close', {light:true});
+const MAG = '<svg viewBox="0 0 24 24" fill="none" stroke="#f0cf86" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="M14.6 14.6 20.5 20.5"/></svg>';
+
+let svgN = 0;
+function pieceSVG(c){
+  const [hi, base, dark] = GLASS_COL[c]; const id = 'pg' + (svgN++);
+  const sil = {
+    Gold: `<path d="M30 13 L48 38 L43 41 Z"/><path d="M45 38C38 40 28 47 23 57C20 63 23 68 29 67C34 66 38 63 43 63C46 69 45 78 41 87L72 87C75 71 73 57 68 48C66 42 62 37 58 35L61 24L53 33C50 34 47 36 45 38Z"/><circle cx="44" cy="48" r="2.6" fill="${base}"/>`,
+    Red: `<path d="M29 33H71V38.5H29Z"/><path d="M38 15H62L64.5 33H35.5Z"/><circle cx="54" cy="52" r="15"/><path d="M44 49C32 53 20 65 13 80C27 72 40 66 51 64Z"/><path d="M40 63C36 73 34 82 34 89H74C74 78 70 69 64 63Z"/><circle cx="50" cy="49" r="4.6" fill="${hi}"/>`,
+    Green: `<path d="M35 47 7 27 28 63Z"/><path d="M65 47 93 27 72 63Z"/><ellipse cx="50" cy="56" rx="22" ry="20"/><path d="M34 74C38 85 44 90 50 90S62 85 66 74Z"/><circle cx="42" cy="52" r="4.3" fill="${hi}"/><circle cx="58" cy="52" r="4.3" fill="${hi}"/><path d="M40 63Q50 72 60 63" fill="none" stroke="${hi}" stroke-width="3"/>`,
+    Blue: `<circle cx="20" cy="42" r="6"/><circle cx="31" cy="38" r="6.5"/><circle cx="43" cy="36" r="7"/><circle cx="56" cy="36" r="7"/><circle cx="68" cy="38" r="6.5"/><circle cx="79" cy="42" r="6"/><path d="M11 44A39 39 0 0 0 89 44Z"/><path d="M20 49A31 31 0 0 0 80 49" fill="none" stroke="${base}" stroke-width="3"/>`
+  }[c];
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><radialGradient id="${id}" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="${hi}"/><stop offset=".55" stop-color="${base}"/><stop offset="1" stop-color="${dark}"/></radialGradient></defs>
+  <circle cx="50" cy="50" r="47" fill="url(#${id})"/>
+  <g stroke="#120c08" stroke-width="1.6" opacity=".55" fill="none"><path d="M50 3V97M3 50H97M17 17 83 83M83 17 17 83"/><circle cx="50" cy="50" r="30"/></g>
+  <g fill="#0b0807">${sil}</g>
+  <circle cx="50" cy="50" r="47" fill="none" stroke="#120c08" stroke-width="5"/></svg>`;
+}
+
+/* ---------- toast ---------- */
+let toastT;
+function toast(t){ const el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), 2600); }
+
+/* ---------- modal system ---------- */
+let lastFocus = null;
+function show(title, body, buttons, opts = {}){
+  const m = $('modal');
+  const wasOpen = !!m.firstChild;
+  if(!wasOpen) lastFocus = document.activeElement;
+  const btns = (buttons || [CLOSE()]).map(b => `<button class="b ${b.pri ? 'pri' : ''} ${b.light ? 'light' : ''}" data-fn="${esc(b.fn)}" ${b.disabled ? 'disabled' : ''}>${esc(b.label)}</button>`).join('');
+  m.innerHTML = `<div class="ov" data-ov="1"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgT" tabindex="-1">
+    <button class="x" data-fn="close" aria-label="Close">✕</button>
+    <div class="dh"><h2 id="dlgT">${title}</h2></div>
+    <div class="db">${body}</div>
+    <div class="df">${btns}</div></div></div>`;
+  if(opts.noAnim) m.querySelector('.dlg').style.animation = 'none';
+  document.body.classList.add('locked');
+  m.querySelector('.dlg').focus({preventScroll:true});
+}
+const msg = (title, html) => show(title, `<p>${html}</p>`);
+function close(){
+  $('modal').innerHTML = '';
+  document.body.classList.remove('locked');
+  if(lastFocus && document.contains(lastFocus)) lastFocus.focus({preventScroll:true});
+  lastFocus = null;
+}
+
+/* ---------- rendering ---------- */
+function render(){
+  const st = $('stage');
+  let h = `<img src="assets/room${S.room}.png" width="1024" height="1536" alt="${esc(ROOM_NAMES[S.room])}" draggable="false">`;
+  if(S.room === 4){
+    h += `<div class="glow"></div>`;
+    h += SOCKETS.map((p, i) => {
+      const c = S.glass[i];
+      const lab = c ? `${POS[i]} socket: ${pieceLabel(c)}. Tap to remove.` : `${POS[i]} socket: empty`;
+      return `<button class="sock ${S.selected ? 'armed' : ''}" style="left:${p.x}%;top:${p.y}%" data-sock="${i}" aria-label="${lab}">${c ? pieceSVG(c) : ''}</button>`;
+    }).join('');
+  }
+  h += HOTSPOTS[S.room].map(o => `<button class="hs ${o.compact ? 'compact' : ''}" style="left:${o.x}%;top:${o.y}%" data-hs="${o.id}" aria-label="Inspect ${esc(o.name)}" title="${esc(o.name)}"><span class="lens">${MAG}</span></button>`).join('');
+  st.innerHTML = h;
+  st.classList.toggle('won', S.room === 4 && S.finished);
+  $('roomlabel').textContent = `Room ${S.room} of 4: ${ROOM_NAMES[S.room]}`;
+  const n = satchelList().length;
+  $('badge').textContent = n ? n : '';
+  $('satchelBtn').setAttribute('aria-label', `Open inventory, ${n} item${n === 1 ? '' : 's'}`);
+  renderPlacing();
+  save();
+}
+function renderPlacing(){
+  const p = $('placing');
+  if(S.room === 4 && S.selected){
+    p.hidden = false;
+    p.innerHTML = `${pieceSVG(S.selected)}<p>Tap a circle above the doors to set the <b>${pieceLabel(S.selected)}</b>.</p><button class="b" data-fn="unselect">Cancel</button>`;
+  } else { p.hidden = true; p.innerHTML = ''; }
+}
+
+/* ---------- satchel / inventory ---------- */
+const unplaced = () => S.found.filter(c => !S.glass.includes(c));
+function satchelList(){ return [...S.items.map(i => ({kind:'item', id:i})), ...unplaced().map(c => ({kind:'glass', id:c}))]; }
+function openSatchel(){
+  const m = $('modal');
+  if(!m.firstChild) lastFocus = document.activeElement;
+  const list = satchelList();
+  const placed = S.glass.filter(Boolean).length;
+  let body = list.length ? `<div class="inv">${list.map(e => e.kind === 'item'
+      ? `<button class="it" data-fn="item:${e.id}"><span class="ic" aria-hidden="true">${ITEMS[e.id].icon}</span><span>${esc(ITEMS[e.id].name)}</span></button>`
+      : `<button class="it ${S.selected === e.id ? 'sel' : ''}" data-fn="pick:${e.id}" aria-label="Select ${pieceLabel(e.id)} stained glass to place">${pieceSVG(e.id)}<span>${pieceLabel(e.id)} glass</span></button>`).join('')}</div>`
+    : `<p class="muted">Nothing collected yet. Tap the magnifying glasses to search the room.</p>`;
+  if(S.room === 4 && unplaced().length) body += `<p class="muted small">Tap a stained-glass piece, then tap a circle above the doors to set it.</p>`;
+  if(S.room === 4 && placed) body += `<p class="muted small">${placed} piece${placed === 1 ? ' is' : 's are'} set in the cross. Tap a filled circle to take it back.</p>`;
+  m.innerHTML = `<div class="ov sheetwrap" data-ov="1"><div class="sheet dlg-sheet" role="dialog" aria-modal="true" aria-labelledby="satT" tabindex="-1">
+    <button class="x" data-fn="close" aria-label="Close inventory">✕</button>
+    <div class="dh"><h2 id="satT">Satchel</h2></div><div class="db">${body}</div></div></div>`;
+  document.body.classList.add('locked');
+  m.querySelector('.sheet').focus({preventScroll:true});
+}
+function showItem(id){
+  const it = ITEMS[id]; if(!it || !has(id)) return openSatchel();
+  show(`${it.icon} ${esc(it.name)}`, it.desc, [B('Back to satchel', 'satchel'), CLOSE()]);
+}
+
+/* ---------- room transitions ---------- */
+function advance(n){
+  S.room = n; S.brew = []; S.gate = []; S.selected = null;
+  close(); render(); window.scrollTo(0, 0);
+  msg(INTRO_TITLES[n], INTROS[n]);
+}
+
+/* ---------- inspect dispatch ---------- */
+function inspect(id){ return ({1:room1, 2:room2, 3:room3, 4:room4})[S.room](id); }
+
+/* ================= ROOM 1: THE INFIRMARY ================= */
+function room1(id){
+  switch(id){
+  case 'ledger':
+    return show('Healer’s Ledger', table(['Patient','Symptoms','Given','Bed'], [
+      ['Aldric','Blackened fingers','Silverleaf','Moon'],
+      ['Branna','Burning fever','Emberroot','Sun'],
+      ['Corvin','Violent coughing','Gravebloom','Crow'],
+      ['Daria','Shivering','Frostmoss','Serpent']]));
+  case 'guide':
+    return show('Treatment Guide', table(['Symptom','Correct treatment'], [
+      ['Blackened fingers','Silverleaf'], ['Burning fever','Emberroot'],
+      ['Shivering','Gravebloom'], ['Violent coughing','Frostmoss']]));
+  case 'patients':
+    return show('The Patients', '<p>Corvin’s bedside cup is empty, with dark Gravebloom residue at its base.</p><p>Beside Daria lies an <b>unopened</b>, sealed Frostmoss packet.</p><p>A night healer’s note reads:</p><div class="quote">“Only one patient swallowed the wrong medicine. The other never received their dose.”</div>');
+  case 'marks':
+    return show('Carvings in the Beams', '<p>Symbols and names are carved into the bed frames and beams, each beside a number.</p>' + table(['Mark','Number'], Object.entries(mappings)));
+  case 'chest': return chestUI();
+  case 'door':
+    if(!has('apokey')) return msg('Locked Door', 'A heavy iron lock bars the apothecary. Somewhere in this room there must be a key.');
+    return show('Door to the Apothecary', '<p>The apothecary key fits the heavy iron lock.</p>', [B('Unlock the door', 'unlockdoor', {pri:true}), CLOSE()]);
+  case 'tapestry':
+    return msg('Suspicious Tapestry', 'A faded tapestry depicts a plague doctor riding a goose. Behind it? Stone. Just stone.');
+  case 'cloth':
+    return msg('Bloodstained Cloth', 'A gruesome rag. It smells of old iron and questionable laundry habits. Nothing is concealed beneath it.');
+  }
+}
+const ENGRAVING = '<p>Engraved on the lock:</p><div class="quote">For the patient who <b>swallowed</b> the false cure: first the mark upon their bed; second the medicine they were given; third the medicine that should have saved them.</div>';
+function chestUI(err){
+  if(flag('chest')) return show('Medicine Chest', ENGRAVING + '<p>The lid stands open and the chest is empty. You already took the apothecary key and the torn quarantine document.</p>');
+  show('Locked Medicine Chest', ENGRAVING + `<label for="code">Enter the three digits:</label><input id="code" class="code-in" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off" placeholder="000">` + (err ? `<div class="note bad">${err}</div>` : ''),
+    [B('Unlock chest', 'chestcheck', {pri:true}), CLOSE()], {noAnim:!!err});
+  const inp = $('code');
+  inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g, '').slice(0, 3); });
+  inp.addEventListener('keydown', e => { if(e.key === 'Enter') act('chestcheck'); });
+}
+function chestCheck(){
+  const v = ($('code') || {}).value || '';
+  if(v === '472'){
+    give('apokey'); give('quarantine'); setFlag('chest'); render();
+    return show('Chest Unlocked!', '<p>Inside: an <b>apothecary key</b> and a torn quarantine document. The document reads:</p><div class="quote">“The crimson witness shall forever face the azure witness across the holy cross.”</div><p class="muted small">Both are now in your satchel.</p>');
+  }
+  chestUI('The chest refuses to open. Recheck who actually swallowed the wrong medicine, and the number carvings.');
+}
+
+/* ================= ROOM 2: THE APOTHECARY ================= */
+function room2(id){
+  switch(id){
+  case 'jars':
+    return show('Six Ingredient Jars', table(['Ingredient','Appearance'], [
+      ['Silverleaf','Pale leaves with metallic veins'], ['Gravebloom','Purple flowers smelling of damp earth'],
+      ['Emberroot','Twisted red roots, warm to the touch'], ['Frostmoss','Blue-grey moss, unnaturally cold'],
+      ['Nightshade','Black berries in dark liquid'], ['Moonwater','Clear liquid with a silvery shimmer']]));
+  case 'experiments':
+    return show('The Experiment Journal', '<p>Each ingredient has one primary effect; no two share an effect. Each successful property in a mixture comes from at least one of its ingredients. Effects do not cancel.</p>' +
+      table(['Trial','Ingredients','Blood cleansed','Spread halted','Mixture stable'], [
+        ['I','Silverleaf + Gravebloom','Yes','No','No'],
+        ['II','Gravebloom + Emberroot','No','No','No'],
+        ['III','Emberroot + Frostmoss','No','Yes','No'],
+        ['IV','Frostmoss + Nightshade','No','Yes','No'],
+        ['V','Nightshade + Moonwater','No','No','Yes'],
+        ['VI','Moonwater + Silverleaf','Yes','No','Yes']]));
+  case 'recipes':
+    return show('The Old Recipe Book', table(['Recipe','Ingredients'], [
+      ['Healer’s Mercy','Silverleaf, Gravebloom, Moonwater'],
+      ['Crimson Remedy','Emberroot, Frostmoss, Moonwater'],
+      ['Silent Cure','Silverleaf, Frostmoss, Nightshade']]) +
+      '<p>Scrawled in the margin:</p><div class="quote">“The Silent Cure fooled us. Their skin cleared, yet the sickness returned before dawn.”</div>');
+  case 'breworder':
+    return show('Cauldron Inscription', '<div class="quote">“The new plague blackens the blood, spreads beneath the skin, and spoils the remedy.”</div><div class="quote">“First, cleanse what has been corrupted. Next, halt what seeks to spread. Last, preserve what would otherwise perish.”</div>');
+  case 'phial':
+    return msg('The Green Phial', '“ORIGINAL PLAGUE CURE” reads the label. Below, in smaller handwriting: “Results pending.” The liquid has eaten through the cork. Probably best not.');
+  case 'cauldron':
+    if(flag('brewed')) return show('The Brewing Cauldron', '<p>Only a silver film remains. The antidote is already in your satchel.</p>', [B('Enter the Main Hall', 'next:3', {pri:true}), CLOSE()]);
+    return brewUI();
+  case 'door':
+    if(flag('brewed')) return show('Doorway to the Main Hall', '<p>The passage leads on to the Main Sanctuary Hall.</p>', [B('Enter the Main Hall', 'next:3', {pri:true}), CLOSE()]);
+    return msg('Doorway to the Main Hall', 'The passage leads to the Main Sanctuary Hall, where someone is very sick. Going without a cure would be pointless.');
+  }
+}
+function brewUI(feedback, re){
+  const slots = [0,1,2].map(i => S.brew[i]
+    ? `<button class="slot full" data-fn="brewremove:${i}" aria-label="Slot ${i + 1}: ${S.brew[i]}. Tap to remove.">${i + 1}. ${S.brew[i]}<small>tap to remove</small></button>`
+    : `<button class="slot" disabled aria-label="Slot ${i + 1}: empty">${i + 1}.<small>empty</small></button>`).join('');
+  const choices = ING.map(x => `<button class="b" data-fn="ingredient:${x}" ${S.brew.includes(x) || S.brew.length >= 3 ? 'disabled' : ''}>${x}</button>`).join('');
+  show('The Brewing Cauldron', '<p>Select three different ingredients <b>in order</b>.</p>' + `<div class="slots s3">${slots}</div><div class="choices">${choices}</div>` + (feedback ? `<div class="note bad">${feedback}</div>` : ''),
+    [B('Brew', 'brewcheck', {pri:true, disabled:S.brew.length !== 3}), B('Empty cauldron', 'brewreset', {disabled:!S.brew.length}), CLOSE()], {noAnim:!!re});
+}
+function brewCheck(){
+  if(S.brew.length !== 3) return brewUI('', true);
+  if(S.brew.join('|') === 'Silverleaf|Frostmoss|Moonwater'){
+    give('antidote'); give('diagram'); setFlag('brewed'); S.brew = []; render();
+    return show('The True Cure!', '<p>The antidote glimmers silver. A concealed drawer clicks open.</p><p>You collect the <b>antidote</b> and a <b>stained-glass diagram</b>:</p><div class="quote">“Follow the sun’s path clockwise around the cross. The emerald witness comes directly after the crimson.”</div>',
+      [B('Enter the Main Hall', 'next:3', {pri:true}), CLOSE()]);
+  }
+  const bad = S.brew.includes('Nightshade') ? 'The potion turns purple. Then your skin turns purple. Not ideal.'
+    : S.brew.includes('Emberroot') ? 'The cauldron erupts. Your eyebrows have escaped before you.'
+    : 'The brew curdles into a foul sludge. Even Eddie would refuse to drink it.';
+  S.brew = []; save();
+  brewUI(bad, true);
+}
+
+/* ================= ROOM 3: MAIN SANCTUARY HALL ================= */
+function room3(id){
+  switch(id){
+  case 'guard':
+    if(flag('guard')) return msg('The Watchman', '“I told you, the key is under the beast’s blankets. And don’t follow the old watch orders!”');
+    if(!has('antidote')) return msg('Sick Guard', 'The guard coughs weakly. He needs medicine — something stronger than the old cures.');
+    return show('Sick Guard', '<p>The guard coughs weakly. He needs medicine — something stronger than the old cures.</p>', [B('Give the antidote', 'treat', {pri:true}), CLOSE()]);
+  case 'cat':
+    if(!flag('guard')) return msg('The Pink Menace', 'The pink cat hisses and buries itself deeper into its blankets. Perhaps someone knows what it is guarding.');
+    if(flag('catkey')) return msg('Pink Cat', 'The cat looks offended that you stole its shiny treasure.');
+    setFlag('catkey'); give('ironkey'); render();
+    return msg('Under the Blankets', 'The cat swipes at your fingers, but you retrieve a <b>small iron key</b>. It is now in your inventory.');
+  case 'desk':
+    if(!flag('desk')){
+      if(!has('ironkey')) return msg('Locked Desk', 'The guard’s drawer is locked. A narrow iron keyhole is visible.');
+      return show('Locked Desk', '<p>The guard’s drawer is locked. A narrow iron keyhole is visible.</p>', [B('Use the iron key', 'opendesk', {pri:true}), CLOSE()]);
+    }
+    return deskContents(false);
+  case 'oldwatch':
+    return show('Old Guard Ledger', '<div class="quote">“Before the plague, the Sun began the watch, and the Serpent ended it. The Crow stood before the Moon.”</div><p>A red wax stamp reads <b>OBSOLETE — DO NOT USE</b>.</p>');
+  case 'crates':
+    if(flag('cog')) return msg('Supply Crates', 'Only splinters and a loaf of bread with ambitions of sentience remain.');
+    setFlag('cog'); give('cog'); render();
+    return msg('False Bottom', 'You lift a loose plank beneath the crates and find a <b>brass cog</b>. Also some mouldy bread. The bread stays.');
+  case 'rusty':
+    return msg('Rusty Key', 'You try a corroded key hanging beside the hearth. It opens a tiny chest containing… another rusty key. This is going nowhere.');
+  case 'gate':
+    if(flag('gate')) return show('The Watchman’s Gate', '<p>The heavy iron gate stands open.</p>', [B('Enter the Sanctuary Entrance', 'next:4', {pri:true}), CLOSE()]);
+    if(!has('cog')) return msg('Broken Gate', 'One brass cog is missing from the mechanism. It cannot turn.');
+    if(!has('seal')) return msg('Sealed Gate', 'The cog fits! But the gate still requires the watchman’s seal.');
+    return gateUI();
+  }
+}
+function deskContents(first){
+  show('Guard’s Desk — Unlocked', `<p>${first ? 'Inside you find' : 'The drawer held'} the <b>watchman’s seal</b> and revised orders:</p><div class="quote">“The Crow stands immediately before the Moon. The Moon takes the final watch.”</div><p>On the reverse of the seal:</p><div class="quote">“The Serpent stands immediately before the Sun.”</div><p>A second, tiny engraving reads:</p><div class="quote">“The golden witness keeps vigil above all others.”</div>` + (first ? '<p class="muted small">The seal and the orders are now in your satchel.</p>' : ''));
+}
+function gateUI(feedback, re){
+  const slots = [0,1,2,3].map(i => S.gate[i]
+    ? `<button class="slot full" data-fn="gateremove:${i}" aria-label="Watch ${i + 1}: ${S.gate[i]}. Tap to remove.">${i + 1}. ${S.gate[i]}<small>tap to remove</small></button>`
+    : `<button class="slot" disabled aria-label="Watch ${i + 1}: empty">${i + 1}.<small>—</small></button>`).join('');
+  const choices = SYMS.map(x => `<button class="b" data-fn="symbol:${x}" ${S.gate.includes(x) || S.gate.length >= 4 ? 'disabled' : ''}>${x}</button>`).join('');
+  show('The Watchman’s Gate', '<p>Fit the cog, arrange the four watches from first to last, and turn the seal.</p>' + `<div class="slots s4">${slots}</div><div class="choices">${choices}</div>` + (feedback ? `<div class="note bad">${feedback}</div>` : ''),
+    [B('Turn seal', 'gatecheck', {pri:true, disabled:S.gate.length !== 4}), B('Reset symbols', 'gatereset', {disabled:!S.gate.length}), CLOSE()], {noAnim:!!re});
+}
+function gateCheck(){
+  if(S.gate.length !== 4) return gateUI('', true);
+  if(S.gate.join('|') === 'Serpent|Sun|Crow|Moon'){
+    setFlag('gate'); take('cog'); S.gate = []; render();
+    return show('The Gate Opens', '<p>The cog catches. The seal turns. The heavy iron gate groans open.</p><p>On the reverse of the seal you notice another engraving:</p><div class="quote">“The golden witness keeps vigil above all others.”</div>',
+      [B('Enter the Sanctuary Entrance', 'next:4', {pri:true}), CLOSE()]);
+  }
+  S.gate = []; save();
+  gateUI('The mechanism jams and an enormous bell rings. Somewhere, a Gremlin swears.', true);
+}
+
+/* ================= ROOM 4: THE FINAL ESCAPE ================= */
+function findPiece(c, heading, description){
+  const already = S.found.includes(c);
+  if(!already){ S.found.push(c); render(); }
+  show(heading, description + `<div class="got"><b>${already ? `You already have the ${pieceLabel(c)} stained-glass piece.` : `${pieceLabel(c)} stained-glass piece found.`}</b>${already ? '' : ' It is now in your satchel.'}</div>`);
+}
+function room4(id){
+  switch(id){
+  case 'notice':
+    return show('Quarantine Notice', '<p>The crimson witness must face the azure witness across the cross. Red and Blue belong opposite each other.</p>' +
+      (S.found.includes('Red') ? '<p class="muted">The loose wax seal hangs open. Nothing else is hidden behind it.</p>' : ''),
+      S.found.includes('Red') ? [CLOSE()] : [B('Lift the loose seal', 'getred', {pri:true}), CLOSE()]);
+  case 'reliquary':
+    return findPiece('Gold', 'The Reliquary', '<p>Inside an ornate reliquary rests a golden unicorn silhouette. An inscription says:</p><div class="quote">“Gold watches from the highest place.”</div>');
+  case 'tile':
+    return findPiece('Green', 'Loose Floor Tile', '<p>Beneath a loose stone, a green gremlin silhouette. Scratched underneath:</p><div class="quote">“The emerald follows immediately clockwise after crimson.”</div>');
+  case 'cabinet':
+    if(!flag('cabinet')) return show('Locked Cabinet', '<p>A sturdy cabinet with an iron padlock. On closer inspection, the padlock hangs from a single rusted screw.</p>', [B('Wiggle the padlock', 'opencabinet', {pri:true}), CLOSE()]);
+    return findPiece('Blue', 'The Cabinet', '<p>The old cabinet yields a blue taco-shaped stained-glass piece. The cabinet door was never properly locked. Typical.</p>');
+  case 'window': return glassUI();
+  case 'lever': return pullLever();
+  case 'exitdoor':
+    if(S.finished) return victory();
+    return msg('Sealed Exit', 'The heavy doors will only open once the stained-glass cross is restored and the lever is pulled.');
+  }
+}
+function glassUI(feedback, re){
+  const pcs = GLASS.map(c => {
+    const f = S.found.includes(c), at = S.glass.indexOf(c);
+    return f ? `<button class="pc ${S.selected === c ? 'sel' : ''}" data-fn="color:${c}" aria-pressed="${S.selected === c}">${pieceSVG(c)}<span>${pieceLabel(c)}<small>${at >= 0 ? 'in ' + POS[at].toLowerCase() + ' socket' : 'in satchel'}</small></span></button>`
+             : `<button class="pc" disabled>🔒 <span>Unknown piece<small>not found yet</small></span></button>`;
+  }).join('');
+  const cells = POS.map((p, i) => `<button class="cs ${S.glass[i] ? 'full' : ''}" data-fn="place:${i}" aria-label="${p} socket: ${S.glass[i] ? pieceLabel(S.glass[i]) : 'empty'}">${S.glass[i] ? pieceSVG(S.glass[i]) : p}</button>`).join('');
+  show('The Four Witnesses', '<p>Find all four pieces in the room. Select a collected piece, then tap a socket. Tap a filled socket with nothing selected to remove it.</p>' +
+    `<div class="pieces">${pcs}</div><div class="cross">${cells}</div><p class="small muted">Clockwise: Top → Right → Bottom → Left. Collected: ${S.found.length}/4.</p>` + (feedback ? `<div class="note bad">${feedback}</div>` : ''),
+    [B('Pull the lever', 'lever', {pri:true, disabled:S.glass.some(x => !x) || S.found.length !== 4}), B('Remove all pieces', 'glassreset', {disabled:!S.glass.some(Boolean)}), CLOSE()], {noAnim:!!re});
+}
+function placeAt(i){
+  if(S.selected){
+    const c = S.selected;
+    if(!S.found.includes(c)){ S.selected = null; return; }
+    const displaced = S.glass[i];
+    S.glass = S.glass.map(x => x === c ? null : x);
+    S.glass[i] = c; S.selected = null;
+    return displaced && displaced !== c ? `${pieceLabel(c)} set in the ${POS[i].toLowerCase()} socket. ${pieceLabel(displaced)} returned to your satchel.` : `${pieceLabel(c)} set in the ${POS[i].toLowerCase()} socket.`;
+  }
+  if(S.glass[i]){ const c = S.glass[i]; S.glass[i] = null; return `${pieceLabel(c)} returned to your satchel.`; }
+  return null;
+}
+function socketTap(i){
+  if(S.finished) return victory();
+  const r = placeAt(i);
+  if(r){ render(); toast(r); return; }
+  if(S.found.length) return msg('An Empty Socket', 'An empty circular socket. Open your satchel, choose a stained-glass piece, then tap the socket to set it in place.');
+  return msg('An Empty Socket', 'An empty circular socket of old lead and stone. Something is meant to sit here.');
+}
+function pullLever(){
+  if(S.finished) return victory();
+  if(S.found.length !== 4) return msg('Mechanical Lever', 'The lever will not move. You must collect all four stained-glass pieces first.');
+  if(S.glass.some(x => !x)) return msg('Mechanical Lever', 'The lever will not move until all four witnesses are in their sockets.');
+  if(S.glass.join('|') === 'Gold|Red|Green|Blue'){
+    S.finished = true; S.selected = null; close(); render(); window.scrollTo({top:0, behavior:'smooth'});
+    setTimeout(victory, 1200); return;
+  }
+  close();
+  const st = $('stage'); st.classList.remove('flash'); void st.offsetWidth; st.classList.add('flash');
+  setTimeout(() => st.classList.remove('flash'), 1600);
+  window.scrollTo({top:0, behavior:'smooth'});
+  setTimeout(() => msg('The Bell Tolls', 'The glass flashes and the doors stay sealed. The bell tolls. Revisit your collected clues.'), 900);
+}
+function victory(){
+  show('YOU ESCAPED THE SANCTUARY!', `<div class="win"><p>Against all odds, terrible medicine and one extremely judgmental pink cat, you survived.</p><p class="muted">Your escape code</p><div class="esc" id="esccode">${ESCAPE_CODE}</div><p><b>DM THE EVIL OVERLORD</b> your escape code to claim your victory. 😈</p><p class="small muted">First correct DM wins, subject to the competition rules.</p></div>`,
+    [B('Copy escape code', 'copycode', {pri:true}), CLOSE()]);
+}
+function copyCode(){
+  const ok = () => toast('Escape code copied. DM the Evil Overlord!');
+  const fallback = () => {
+    try{
+      const t = document.createElement('textarea'); t.value = ESCAPE_CODE; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(t); t.select(); t.setSelectionRange(0, 99); const r = document.execCommand('copy'); t.remove();
+      if(r) return ok();
+    }catch(e){}
+    const el = $('esccode');
+    if(el){ const rg = document.createRange(); rg.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg); }
+    toast('Copy failed. Press and hold the code to copy it.');
+  };
+  if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(ESCAPE_CODE).then(ok, fallback); else fallback();
+}
+
+/* ---------- action router ---------- */
+function act(fn){
+  const [cmd, arg] = fn.includes(':') ? [fn.slice(0, fn.indexOf(':')), fn.slice(fn.indexOf(':') + 1)] : [fn, ''];
+  switch(cmd){
+  case 'close': return close();
+  case 'satchel': return openSatchel();
+  case 'item': return showItem(arg);
+  case 'next': if(+arg === S.room + 1 && ((S.room === 2 && flag('brewed')) || (S.room === 3 && flag('gate')))) return advance(+arg); return close();
+  /* room 1 */
+  case 'chestcheck': return chestCheck();
+  case 'unlockdoor': if(S.room === 1 && has('apokey')){ take('apokey'); setFlag('door1'); return advance(2); } return close();
+  /* room 2 */
+  case 'ingredient': if(ING.includes(arg) && !S.brew.includes(arg) && S.brew.length < 3){ S.brew.push(arg); save(); } return brewUI('', true);
+  case 'brewremove': S.brew.splice(+arg, 1); save(); return brewUI('', true);
+  case 'brewreset': S.brew = []; save(); return brewUI('', true);
+  case 'brewcheck': return brewCheck();
+  /* room 3 */
+  case 'treat':
+    if(has('antidote') && !flag('guard')){
+      take('antidote'); setFlag('guard'); render();
+      return msg('The Guard Revives', 'You administer the antidote. The guard blinks awake: <i>“The watchman’s seal is locked in my desk. I hid the key where the beast sleeps. The watch orders changed after the outbreak!”</i>');
+    } return close();
+  case 'opendesk':
+    if(has('ironkey') && !flag('desk')){ take('ironkey'); give('seal'); give('orders'); setFlag('desk'); render(); return deskContents(true); }
+    return close();
+  case 'symbol': if(SYMS.includes(arg) && !S.gate.includes(arg) && S.gate.length < 4){ S.gate.push(arg); save(); } return gateUI('', true);
+  case 'gateremove': S.gate.splice(+arg, 1); save(); return gateUI('', true);
+  case 'gatereset': S.gate = []; save(); return gateUI('', true);
+  case 'gatecheck': return gateCheck();
+  /* room 4 */
+  case 'getred': return findPiece('Red', 'Hidden in the Quarantine Notice', '<p>Behind the wax seal lies the crimson plague-doctor mask.</p>');
+  case 'opencabinet': setFlag('cabinet'); save(); return room4('cabinet');
+  case 'color':
+    if(!S.found.includes(arg)) return glassUI('Find that piece first.', true);
+    S.selected = S.selected === arg ? null : arg; save(); renderPlacing(); render(); return glassUI('', true);
+  case 'place': placeAt(+arg); render(); return glassUI('', true);
+  case 'glassreset': S.glass = [null,null,null,null]; S.selected = null; render(); return glassUI('', true);
+  case 'lever': return pullLever();
+  case 'pick':
+    if(S.room !== 4 || !S.found.includes(arg)) return;
+    S.selected = arg; close(); render(); window.scrollTo({top:0, behavior:'smooth'});
+    return toast(`Tap a circle above the doors to set the ${pieceLabel(arg)}.`);
+  case 'unselect': S.selected = null; render(); return;
+  case 'copycode': return copyCode();
+  /* restart */
+  case 'restart': return show('Restart the Challenge?', '<p>This will erase your saved progress on this device.</p>', [B('Yes, start over', 'confirmrestart', {pri:true}), B('Cancel', 'close', {light:true})]);
+  case 'confirmrestart':
+    S = fresh(); close(); render(); window.scrollTo(0, 0);
+    return msg('A New Victim', 'You wake in the infirmary. The plague bells are ringing. Again.');
+  case 'begin': setFlag('intro'); save(); return close();
+  }
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-fn],[data-hs],[data-sock]');
+  if(!t){
+    if(e.target.dataset && e.target.dataset.ov) close();   // tap on dimmed backdrop
+    return;
+  }
+  if(t.disabled) return;
+  if(t.dataset.hs) return inspect(t.dataset.hs);
+  if(t.dataset.sock !== undefined) return socketTap(+t.dataset.sock);
+  act(t.dataset.fn);
+});
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && $('modal').firstChild) close(); });
+$('satchelBtn').addEventListener('click', e => { e.stopPropagation(); openSatchel(); });
+$('restartBtn').addEventListener('click', e => { e.stopPropagation(); act('restart'); });
+
+/* preload artwork */
+[1,2,3,4].forEach(n => { const i = new Image(); i.src = `assets/room${n}.png`; });
+
+render();
+if(S.finished && S.room === 4) victory();
+else if(!flag('intro') && S.room === 1){ setFlag('intro'); save();
+  show('Escape the Sanctuary', '<p><i>Plague Protocol: a Gremlins challenge.</i></p><p>The plague bells are ringing and the sanctuary is sealed. Four rooms stand between you and freedom.</p><p>Tap the small magnifying glasses to investigate. Anything you find goes in your satchel.</p><div class="quote">Find who swallowed the false cure. Unlock the medicine chest.</div>', [B('Begin', 'begin', {pri:true})]); }
+</script>
+</body>
+</html>
