@@ -1,0 +1,2 @@
+# Plague
+Last Asylum game
